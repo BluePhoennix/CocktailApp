@@ -39,3 +39,20 @@ def close_cocktails(inventory_names):
             if len(missing) == 1:
                 close.append((cocktail["name"], missing[0]))
     return close
+
+
+def cocktail_statuses(inventory_names):
+    statuses = []
+    for cocktail in _fetch_all_cocktails():
+        needed = [i["name"].lower() for i in cocktail["cocktail_ingredients"]]
+        missing = [name for name in needed if name not in inventory_names]
+        if not missing:
+            state = "can_make"
+        elif len(missing) == 1:
+            state = "almost"
+        else:
+            state = "missing_many"
+        statuses.append({"name": cocktail["name"], "state": state, "missing": missing})
+    order = {"can_make": 0, "almost": 1, "missing_many": 2}
+    statuses.sort(key=lambda s: (order[s["state"]], s["name"]))
+    return statuses

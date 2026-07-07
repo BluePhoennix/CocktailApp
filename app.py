@@ -93,20 +93,12 @@ def cocktail_detail(name):
     return render_template("cocktail_detail.html", cocktail=cocktail, name=name)
 
 
-@app.route("/possible")
+@app.route("/cocktails")
 @login_required
-def possible_page():
+def cocktails_page():
     inventory_names = inventory_service.list_items(session["user_id"])
-    possible = cocktail_service.possible_cocktails(inventory_names)
-    return render_template("possible.html", possible=possible)
-
-
-@app.route("/close")
-@login_required
-def close_page():
-    inventory_names = inventory_service.list_items(session["user_id"])
-    close = cocktail_service.close_cocktails(inventory_names)
-    return render_template("close.html", close=close)
+    statuses = cocktail_service.cocktail_statuses(inventory_names)
+    return render_template("cocktails.html", statuses=statuses)
 
 
 if __name__ == "__main__":

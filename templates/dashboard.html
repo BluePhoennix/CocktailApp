@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-  <h1>Cocktail App</h1>
-  <p>Signed in as {{ email }}.</p>
-  <ul>
-    <li><a href="{{ url_for('inventory_page') }}">Manage your inventory</a></li>
-    <li><a href="{{ url_for('search_page') }}">Search cocktails</a></li>
-    <li><a href="{{ url_for('possible_page') }}">What can I make?</a></li>
-    <li><a href="{{ url_for('close_page') }}">What am I close to making?</a></li>
-  </ul>
+  <h1>Welcome back</h1>
+  <p class="empty-state" style="margin-top: -0.75rem; margin-bottom: 1.25rem;">Signed in as {{ email }}</p>
+  <div class="card">
+    <ul class="item-list">
+      <li><a href="{{ url_for('inventory_page') }}">Manage your inventory</a></li>
+      <li><a href="{{ url_for('search_page') }}">Search cocktails</a></li>
+      <li><a href="{{ url_for('cocktails_page') }}">What can I make?</a></li>
+    </ul>
+  </div>
 {% endblock %}

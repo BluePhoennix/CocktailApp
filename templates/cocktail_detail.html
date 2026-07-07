@@ -2,15 +2,17 @@
 {% block content %}
   {% if cocktail %}
     <h1>{{ cocktail.name }}</h1>
-    <ul>
-      {% for line in cocktail.ingredients %}
-        <li>{{ line }}</li>
-      {% endfor %}
-    </ul>
-    <p>{{ cocktail.instructions }}</p>
+    <div class="card">
+      <ul class="item-list">
+        {% for line in cocktail.ingredients %}
+          <li>{{ line }}</li>
+        {% endfor %}
+      </ul>
+      <p style="margin-bottom: 0;">{{ cocktail.instructions }}</p>
+    </div>
   {% else %}
     <h1>Not found</h1>
-    <p>No cocktail named "{{ name }}".</p>
+    <p class="empty-state">No cocktail named "{{ name }}".</p>
   {% endif %}
-  <p><a href="{{ url_for('search_page') }}">Back to search</a></p>
+  <p class="help-link"><a href="{{ url_for('search_page') }}">Back to search</a></p>
 {% endblock %}
