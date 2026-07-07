@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Cocktails you're close to making</h1>
+  {% if close %}
+    <ul>
+      {% for name, missing in close %}
+        <li>{{ name }} is missing: {{ missing }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>You are not close to making any cocktails.</p>
+  {% endif %}
+{% endblock %}

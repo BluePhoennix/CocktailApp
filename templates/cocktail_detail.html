@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+  {% if cocktail %}
+    <h1>{{ cocktail.name }}</h1>
+    <ul>
+      {% for line in cocktail.ingredients %}
+        <li>{{ line }}</li>
+      {% endfor %}
+    </ul>
+    <p>{{ cocktail.instructions }}</p>
+  {% else %}
+    <h1>Not found</h1>
+    <p>No cocktail named "{{ name }}".</p>
+  {% endif %}
+  <p><a href="{{ url_for('search_page') }}">Back to search</a></p>
+{% endblock %}

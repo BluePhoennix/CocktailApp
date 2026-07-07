@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Cocktail App</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 640px; margin: 2rem auto; padding: 0 1rem; }
+    nav a { margin-right: 1rem; }
+    ul { padding-left: 1.2rem; }
+    .flash { background: #fff3cd; padding: 0.5rem 1rem; border-radius: 4px; margin-bottom: 1rem; }
+    form.inline { display: inline; }
+  </style>
+</head>
+<body>
+  {% if session.get('user_id') %}
+  <nav>
+    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('inventory_page') }}">Inventory</a>
+    <a href="{{ url_for('search_page') }}">Search</a>
+    <a href="{{ url_for('possible_page') }}">What can I make?</a>
+    <a href="{{ url_for('close_page') }}">Almost there</a>
+    <a href="{{ url_for('logout') }}">Log out ({{ session.get('email') }})</a>
+  </nav>
+  <hr>
+  {% endif %}
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <div class="flash">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</body>
+</html>

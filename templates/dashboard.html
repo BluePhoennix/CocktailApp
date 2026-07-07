@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Cocktail App</h1>
+  <p>Signed in as {{ email }}.</p>
+  <ul>
+    <li><a href="{{ url_for('inventory_page') }}">Manage your inventory</a></li>
+    <li><a href="{{ url_for('search_page') }}">Search cocktails</a></li>
+    <li><a href="{{ url_for('possible_page') }}">What can I make?</a></li>
+    <li><a href="{{ url_for('close_page') }}">What am I close to making?</a></li>
+  </ul>
+{% endblock %}

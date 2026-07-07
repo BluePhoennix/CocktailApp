@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Cocktails you can make</h1>
+  {% if possible %}
+    <ul>
+      {% for name in possible %}
+        <li><a href="{{ url_for('cocktail_detail', name=name) }}">{{ name }}</a></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>You can't make any cocktails with your current inventory.</p>
+  {% endif %}
+{% endblock %}

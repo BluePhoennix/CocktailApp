@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Search cocktails</h1>
+  <form method="get">
+    <input type="text" name="q" value="{{ query }}" placeholder="Cocktail name">
+    <button type="submit">Search</button>
+  </form>
+
+  {% if query %}
+    {% if results %}
+      <ul>
+        {% for name in results %}
+          <li><a href="{{ url_for('cocktail_detail', name=name) }}">{{ name }}</a></li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No cocktails matched "{{ query }}".</p>
+    {% endif %}
+  {% endif %}
+{% endblock %}
