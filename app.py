@@ -56,15 +56,9 @@ def logout():
     return redirect(url_for("login_page"))
 
 
-@app.route("/dashboard")
+@app.route("/dashboard", methods=["GET", "POST"])
 @login_required
 def dashboard():
-    return render_template("dashboard.html", email=session.get("email"))
-
-
-@app.route("/inventory", methods=["GET", "POST"])
-@login_required
-def inventory_page():
     user_id = session["user_id"]
     if request.method == "POST":
         action = request.form.get("action")
@@ -73,17 +67,11 @@ def inventory_page():
             inventory_service.add_item(user_id, name)
         elif name and action == "remove":
             inventory_service.remove_item(user_id, name)
-        return redirect(url_for("inventory_page"))
-    items = sorted(inventory_service.list_items(user_id))
-    return render_template("inventory.html", items=items)
+        return redirect(url_for("dashboard"))
 
-
-@app.route("/search")
-@login_required
-def search_page():
-    query = request.args.get("q", "")
-    results = cocktail_service.search(query) if query else []
-    return render_template("search.html", query=query, results=results)
+    inventory_items = sorted(inventory_service.list_items(user_id))
+    statuses = cocktail_service.cocktail_statuses(set(inventory_items))
+    return render_template("dashboard.html", inventory_items=inventory_items, statuses=statuses)
 
 
 @app.route("/cocktail/<name>")
@@ -91,14 +79,6 @@ def search_page():
 def cocktail_detail(name):
     cocktail = cocktail_service.show_cocktail(name)
     return render_template("cocktail_detail.html", cocktail=cocktail, name=name)
-
-
-@app.route("/cocktails")
-@login_required
-def cocktails_page():
-    inventory_names = inventory_service.list_items(session["user_id"])
-    statuses = cocktail_service.cocktail_statuses(inventory_names)
-    return render_template("cocktails.html", statuses=statuses)
 
 
 if __name__ == "__main__":

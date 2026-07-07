@@ -99,6 +99,55 @@ nav.links a.active {
   max-width: 420px;
 }
 
+.container.wide {
+  max-width: 960px;
+}
+
+#cocktail-search {
+  width: 100%;
+  margin-bottom: 1rem;
+  font-size: 1.05rem;
+  padding: 0.7rem 0.9rem;
+}
+
+.dashboard-layout {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.main-col {
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar {
+  width: 280px;
+  flex: none;
+}
+
+.sidebar h2 {
+  font-size: 1rem;
+  margin: 0 0 0.75rem;
+}
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+}
+
+.filter-bar input { cursor: pointer; }
+
+@media (max-width: 680px) {
+  .dashboard-layout { flex-direction: column; }
+  .sidebar { width: 100%; }
+}
+
 h1 {
   font-size: 1.5rem;
   margin: 0 0 1.25rem;

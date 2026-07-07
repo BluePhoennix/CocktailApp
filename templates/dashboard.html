@@ -1,12 +1,78 @@
 {% extends "base.html" %}
 {% block content %}
-  <h1>Welcome back</h1>
-  <p class="empty-state" style="margin-top: -0.75rem; margin-bottom: 1.25rem;">Signed in as {{ email }}</p>
-  <div class="card">
-    <ul class="item-list">
-      <li><a href="{{ url_for('inventory_page') }}">Manage your inventory</a></li>
-      <li><a href="{{ url_for('search_page') }}">Search cocktails</a></li>
-      <li><a href="{{ url_for('cocktails_page') }}">What can I make?</a></li>
-    </ul>
+  <input type="text" id="cocktail-search" placeholder="Search cocktails..." autocomplete="off">
+
+  <div class="dashboard-layout">
+    <div class="main-col">
+      <label class="filter-bar">
+        <input type="checkbox" id="only-makeable">
+        Only show cocktails I can make
+      </label>
+
+      <div class="card">
+        {% for s in statuses %}
+          <div class="cocktail-row {{ 'can-make' if s.state == 'can_make' else 'almost' if s.state == 'almost' else '' }}"
+               data-name="{{ s.name|lower }}" data-can-make="{{ '1' if s.state == 'can_make' else '0' }}">
+            <div class="box">{{ '✓' if s.state == 'can_make' else '!' if s.state == 'almost' else '' }}</div>
+            <div>
+              <a class="name" href="{{ url_for('cocktail_detail', name=s.name) }}">{{ s.name }}</a>
+              {% if s.missing %}
+                <div class="detail">Missing: {{ s.missing | join(", ") }}</div>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+        <p id="no-results" class="empty-state" style="display: none;">No cocktails match.</p>
+        {% if not statuses %}
+          <p class="empty-state">No cocktails in the recipe book yet.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <aside class="sidebar card">
+      <h2>Inventory</h2>
+      <form method="post" class="inline-row">
+        <input type="text" name="name" placeholder="Ingredient" required>
+        <button type="submit" name="action" value="add">Add</button>
+      </form>
+      {% if inventory_items %}
+        <ul class="item-list">
+          {% for item in inventory_items %}
+            <li>
+              <span>{{ item }}</span>
+              <form class="inline" method="post">
+                <input type="hidden" name="name" value="{{ item }}">
+                <button class="remove-btn" type="submit" name="action" value="remove">Remove</button>
+              </form>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="empty-state">Your inventory is empty.</p>
+      {% endif %}
+    </aside>
   </div>
+
+  <script>
+    const searchBox = document.getElementById("cocktail-search");
+    const onlyMakeable = document.getElementById("only-makeable");
+    const rows = document.querySelectorAll(".cocktail-row");
+    const noResults = document.getElementById("no-results");
+
+    function applyFilters() {
+      const query = searchBox.value.trim().toLowerCase();
+      let visibleCount = 0;
+      rows.forEach((row) => {
+        const matchesSearch = row.dataset.name.includes(query);
+        const matchesFilter = !onlyMakeable.checked || row.dataset.canMake === "1";
+        const visible = matchesSearch && matchesFilter;
+        row.style.display = visible ? "" : "none";
+        if (visible) visibleCount += 1;
+      });
+      noResults.style.display = visibleCount === 0 ? "" : "none";
+    }
+
+    searchBox.addEventListener("input", applyFilters);
+    onlyMakeable.addEventListener("change", applyFilters);
+  </script>
 {% endblock %}
