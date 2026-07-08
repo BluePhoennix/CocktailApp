@@ -1,27 +1,37 @@
 {% extends "base.html" %}
 {% block content %}
-  <h1>Add a cocktail</h1>
+  <h1>{{ 'Edit cocktail' if cocktail else 'Add a cocktail' }}</h1>
   <div class="card">
     <form method="post" class="stack">
-      <input type="text" name="name" placeholder="Cocktail name" required>
+      <input type="text" name="name" placeholder="Cocktail name" value="{{ cocktail.name if cocktail else '' }}" required>
 
       <div id="ingredient-rows">
-        <div class="ingredient-input-row">
-          <input type="text" name="ingredient_name" placeholder="Ingredient">
-          <input type="text" name="ingredient_amount" placeholder="Amount">
-          <button type="button" class="secondary remove-row-btn" onclick="this.parentElement.remove()">✕</button>
-        </div>
-        <div class="ingredient-input-row">
-          <input type="text" name="ingredient_name" placeholder="Ingredient">
-          <input type="text" name="ingredient_amount" placeholder="Amount">
-          <button type="button" class="secondary remove-row-btn" onclick="this.parentElement.remove()">✕</button>
-        </div>
+        {% if cocktail %}
+          {% for ing in cocktail.cocktail_ingredients %}
+            <div class="ingredient-input-row">
+              <input type="text" name="ingredient_name" placeholder="Ingredient" value="{{ ing.name }}">
+              <input type="text" name="ingredient_amount" placeholder="Amount" value="{{ ing.amount }}">
+              <button type="button" class="secondary remove-row-btn" onclick="this.parentElement.remove()">✕</button>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="ingredient-input-row">
+            <input type="text" name="ingredient_name" placeholder="Ingredient">
+            <input type="text" name="ingredient_amount" placeholder="Amount">
+            <button type="button" class="secondary remove-row-btn" onclick="this.parentElement.remove()">✕</button>
+          </div>
+          <div class="ingredient-input-row">
+            <input type="text" name="ingredient_name" placeholder="Ingredient">
+            <input type="text" name="ingredient_amount" placeholder="Amount">
+            <button type="button" class="secondary remove-row-btn" onclick="this.parentElement.remove()">✕</button>
+          </div>
+        {% endif %}
       </div>
       <button type="button" class="secondary" onclick="addIngredientRow()">+ Add ingredient</button>
 
-      <textarea name="instructions" placeholder="Instructions" rows="4" required></textarea>
+      <textarea name="instructions" placeholder="Instructions" rows="4" required>{{ cocktail.instructions if cocktail else '' }}</textarea>
 
-      <button type="submit">Save cocktail</button>
+      <button type="submit">{{ 'Save changes' if cocktail else 'Save cocktail' }}</button>
     </form>
   </div>
   <p class="help-link"><a href="{{ url_for('dashboard') }}">Back to dashboard</a></p>

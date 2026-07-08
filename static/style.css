@@ -303,6 +303,25 @@ form.inline { display: inline; }
 }
 
 .cocktail-header .name { font-weight: 600; font-size: 1.02rem; }
+
+.cocktail-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.cocktail-actions a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.cocktail-actions a:hover { color: var(--text); }
 .cocktail-item.can-make .name { color: var(--good); }
 .cocktail-item.almost .name { color: var(--warn); }
 

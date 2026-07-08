@@ -113,6 +113,49 @@ def add_cocktail_page():
     return render_template("add_cocktail.html")
 
 
+@app.route("/cocktails/<int:cocktail_id>/edit", methods=["GET", "POST"])
+@login_required
+def edit_cocktail_page(cocktail_id):
+    user_id = session["user_id"]
+    cocktail = cocktail_service.get_cocktail(user_id, cocktail_id)
+    if cocktail is None:
+        flash("Cocktail not found.")
+        return redirect(url_for("dashboard"))
+
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        instructions = request.form.get("instructions", "").strip()
+        ingredient_names = request.form.getlist("ingredient_name")
+        ingredient_amounts = request.form.getlist("ingredient_amount")
+        ingredients = [
+            {"name": ing_name.strip(), "amount": ing_amount.strip()}
+            for ing_name, ing_amount in zip(ingredient_names, ingredient_amounts)
+            if ing_name.strip() and ing_amount.strip()
+        ]
+
+        if not name or not instructions or not ingredients:
+            flash("A cocktail needs a name, at least one ingredient with an amount, and instructions.")
+            return render_template("add_cocktail.html", cocktail=cocktail)
+
+        try:
+            cocktail_service.update_cocktail(user_id, cocktail_id, name, instructions, ingredients)
+            flash(f"{name} updated.")
+            return redirect(url_for("dashboard"))
+        except Exception as e:
+            flash(str(e))
+            return render_template("add_cocktail.html", cocktail=cocktail)
+
+    return render_template("add_cocktail.html", cocktail=cocktail)
+
+
+@app.route("/cocktails/<int:cocktail_id>/delete", methods=["POST"])
+@login_required
+def delete_cocktail_page(cocktail_id):
+    cocktail_service.delete_cocktail(session["user_id"], cocktail_id)
+    flash("Cocktail deleted.")
+    return redirect(url_for("dashboard"))
+
+
 @app.route("/view/<share_code>")
 def view_page(share_code):
     owner_id = profile_service.get_user_id_by_share_code(share_code)
