@@ -62,3 +62,40 @@ create policy "Users manage their own profile"
   for all
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
+
+-- Migration: run this next, in the SQL editor, to make cocktails per-user.
+-- Previously every cocktail was global and visible to all users; now each
+-- user only sees the cocktails they added. Existing cocktails (the seed
+-- data and anything added before this migration) are assigned to whichever
+-- account was created first, so they aren't silently deleted.
+alter table cocktails add column user_id uuid references auth.users(id) on delete cascade;
+
+update cocktails set user_id = (select id from auth.users order by created_at asc limit 1)
+where user_id is null;
+
+alter table cocktails alter column user_id set not null;
+
+alter table cocktails drop constraint if exists cocktails_name_key;
+alter table cocktails add constraint cocktails_user_id_name_key unique (user_id, name);
+
+alter table cocktails enable row level security;
+
+create policy "Users manage their own cocktails"
+  on cocktails
+  for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+alter table cocktail_ingredients enable row level security;
+
+create policy "Users manage their own cocktail ingredients"
+  on cocktail_ingredients
+  for all
+  using (exists (
+    select 1 from cocktails c
+    where c.id = cocktail_ingredients.cocktail_id and c.user_id = auth.uid()
+  ))
+  with check (exists (
+    select 1 from cocktails c
+    where c.id = cocktail_ingredients.cocktail_id and c.user_id = auth.uid()
+  ));

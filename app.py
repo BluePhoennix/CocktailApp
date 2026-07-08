@@ -72,7 +72,7 @@ def dashboard():
         return redirect(url_for("dashboard"))
 
     inventory_items = sorted(inventory_service.list_items(user_id))
-    statuses = cocktail_service.cocktail_statuses(set(inventory_items))
+    statuses = cocktail_service.cocktail_statuses(user_id, set(inventory_items))
 
     share_code = profile_service.get_share_code(user_id)
     if share_code is None:
@@ -103,7 +103,7 @@ def add_cocktail_page():
             return render_template("add_cocktail.html")
 
         try:
-            cocktail_service.create_cocktail(name, instructions, ingredients)
+            cocktail_service.create_cocktail(session["user_id"], name, instructions, ingredients)
             flash(f"{name} added to the recipe book.")
             return redirect(url_for("dashboard"))
         except Exception as e:
@@ -120,7 +120,7 @@ def view_page(share_code):
         return render_template("view.html", found=False, makeable=[])
 
     inventory_names = inventory_service.list_items(owner_id)
-    statuses = cocktail_service.cocktail_statuses(inventory_names)
+    statuses = cocktail_service.cocktail_statuses(owner_id, inventory_names)
     makeable = [s for s in statuses if s["state"] == "can_make"]
     return render_template("view.html", found=True, makeable=makeable)
 

@@ -1,23 +1,30 @@
 from supabase_client import get_client
 
 
-def _fetch_all_cocktails():
+def _fetch_all_cocktails(user_id):
     client = get_client()
-    result = client.table("cocktails").select("id, name, instructions, cocktail_ingredients(name, amount)").execute()
+    result = (
+        client.table("cocktails")
+        .select("id, name, instructions, cocktail_ingredients(name, amount)")
+        .eq("user_id", user_id)
+        .execute()
+    )
     return result.data
 
 
-def create_cocktail(name, instructions, ingredients):
+def create_cocktail(user_id, name, instructions, ingredients):
     client = get_client()
-    result = client.table("cocktails").insert({"name": name, "instructions": instructions}).execute()
+    result = client.table("cocktails").insert(
+        {"user_id": user_id, "name": name, "instructions": instructions}
+    ).execute()
     cocktail_id = result.data[0]["id"]
     rows = [{"cocktail_id": cocktail_id, "name": ing["name"], "amount": ing["amount"]} for ing in ingredients]
     client.table("cocktail_ingredients").insert(rows).execute()
 
 
-def cocktail_statuses(inventory_names):
+def cocktail_statuses(user_id, inventory_names):
     statuses = []
-    for cocktail in _fetch_all_cocktails():
+    for cocktail in _fetch_all_cocktails(user_id):
         ingredients = []
         missing = []
         for ing in cocktail["cocktail_ingredients"]:
