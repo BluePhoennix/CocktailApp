@@ -10,9 +10,15 @@
       <p class="empty-state">Nothing can currently be made from this bar.</p>
     </div>
   {% else %}
+    <div class="inline-row">
+      <input type="text" id="cocktail-search" placeholder="Search by name or ingredient..." autocomplete="off">
+    </div>
+
     <div class="card">
       {% for s in makeable %}
-        <div class="cocktail-item can-make">
+        <div class="cocktail-item can-make"
+             data-name="{{ s.name|lower }}"
+             data-ingredients="{{ s.ingredients|map(attribute='name')|join(' ')|lower }}">
           <div class="cocktail-header">
             <div class="box">✓</div>
             <span class="name">{{ s.name }}</span>
@@ -25,6 +31,26 @@
           <p class="instructions">{{ s.instructions }}</p>
         </div>
       {% endfor %}
+      <p id="no-results" class="empty-state" style="display: none;">No cocktails match.</p>
     </div>
+
+    <script>
+      const searchBox = document.getElementById("cocktail-search");
+      const rows = document.querySelectorAll(".cocktail-item");
+      const noResults = document.getElementById("no-results");
+
+      function applyFilters() {
+        const query = searchBox.value.trim().toLowerCase();
+        let visibleCount = 0;
+        rows.forEach((row) => {
+          const visible = row.dataset.name.includes(query) || row.dataset.ingredients.includes(query);
+          row.style.display = visible ? "" : "none";
+          if (visible) visibleCount += 1;
+        });
+        noResults.style.display = visibleCount === 0 ? "" : "none";
+      }
+
+      searchBox.addEventListener("input", applyFilters);
+    </script>
   {% endif %}
 {% endblock %}
