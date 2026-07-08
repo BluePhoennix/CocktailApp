@@ -167,7 +167,7 @@ def view_page(share_code):
     if owner_id is None:
         return render_template("view.html", found=False, makeable=[])
 
-    inventory_names = inventory_service.list_items(owner_id)
+    inventory_names = {item["name"] for item in inventory_service.list_items(owner_id)}
     statuses = cocktail_service.cocktail_statuses(owner_id, inventory_names)
     makeable = [s for s in statuses if s["state"] == "can_make"]
     return render_template("view.html", found=True, makeable=makeable)
