@@ -65,14 +65,19 @@ def dashboard():
     if request.method == "POST":
         action = request.form.get("action")
         name = request.form.get("name", "").strip()
-        if name and action == "add":
-            inventory_service.add_item(user_id, name)
+        category = request.form.get("category", "").strip()
+        if name and action == "add" and category in ("spirit", "mixer"):
+            inventory_service.add_item(user_id, name, category)
         elif name and action == "remove":
             inventory_service.remove_item(user_id, name)
         return redirect(url_for("dashboard"))
 
-    inventory_items = sorted(inventory_service.list_items(user_id))
-    statuses = cocktail_service.cocktail_statuses(user_id, set(inventory_items))
+    inventory = inventory_service.list_items(user_id)
+    inventory_names = {item["name"] for item in inventory}
+    statuses = cocktail_service.cocktail_statuses(user_id, inventory_names)
+
+    spirits = sorted(item["name"] for item in inventory if item["category"] == "spirit")
+    mixers = sorted(item["name"] for item in inventory if item["category"] == "mixer")
 
     share_code = profile_service.get_share_code(user_id)
     if share_code is None:
@@ -80,7 +85,7 @@ def dashboard():
     share_url = url_for("view_page", share_code=share_code, _external=True)
 
     return render_template(
-        "dashboard.html", inventory_items=inventory_items, statuses=statuses, share_url=share_url
+        "dashboard.html", spirits=spirits, mixers=mixers, statuses=statuses, share_url=share_url
     )
 
 

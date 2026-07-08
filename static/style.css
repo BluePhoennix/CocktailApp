@@ -175,7 +175,7 @@ h1 {
   font-size: 0.92rem;
 }
 
-input[type="text"], input[type="email"], input[type="password"], textarea {
+input[type="text"], input[type="email"], input[type="password"], textarea, select {
   width: 100%;
   padding: 0.55rem 0.7rem;
   border: 1px solid var(--border);

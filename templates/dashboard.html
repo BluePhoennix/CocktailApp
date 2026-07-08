@@ -58,11 +58,17 @@
         <h2>Inventory</h2>
         <form method="post" class="inline-row">
           <input type="text" name="name" placeholder="Ingredient" required>
+          <select name="category" required>
+            <option value="spirit">Spirit</option>
+            <option value="mixer">Mixer</option>
+          </select>
           <button type="submit" name="action" value="add">Add</button>
         </form>
-        {% if inventory_items %}
+
+        <p class="section-label">Spirits</p>
+        {% if spirits %}
           <ul class="item-list">
-            {% for item in inventory_items %}
+            {% for item in spirits %}
               <li>
                 <span>{{ item|capitalize }}</span>
                 <form class="inline" method="post">
@@ -73,7 +79,24 @@
             {% endfor %}
           </ul>
         {% else %}
-          <p class="empty-state">Your inventory is empty.</p>
+          <p class="empty-state">No spirits yet.</p>
+        {% endif %}
+
+        <p class="section-label">Mixers</p>
+        {% if mixers %}
+          <ul class="item-list">
+            {% for item in mixers %}
+              <li>
+                <span>{{ item|capitalize }}</span>
+                <form class="inline" method="post">
+                  <input type="hidden" name="name" value="{{ item }}">
+                  <button class="remove-btn" type="submit" name="action" value="remove">Remove</button>
+                </form>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="empty-state">No mixers yet.</p>
         {% endif %}
       </div>
     </aside>

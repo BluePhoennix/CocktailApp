@@ -99,3 +99,9 @@ create policy "Users manage their own cocktail ingredients"
     select 1 from cocktails c
     where c.id = cocktail_ingredients.cocktail_id and c.user_id = auth.uid()
   ));
+
+-- Migration: run this next, in the SQL editor, to split inventory into
+-- spirits and mixers. Existing items default to 'mixer' since we can't
+-- infer which category they were before.
+alter table inventory_items add column category text not null default 'mixer'
+  check (category in ('spirit', 'mixer'));
