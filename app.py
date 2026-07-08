@@ -74,11 +74,33 @@ def dashboard():
     return render_template("dashboard.html", inventory_items=inventory_items, statuses=statuses)
 
 
-@app.route("/cocktail/<name>")
+@app.route("/cocktails/new", methods=["GET", "POST"])
 @login_required
-def cocktail_detail(name):
-    cocktail = cocktail_service.show_cocktail(name)
-    return render_template("cocktail_detail.html", cocktail=cocktail, name=name)
+def add_cocktail_page():
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        instructions = request.form.get("instructions", "").strip()
+        ingredient_names = request.form.getlist("ingredient_name")
+        ingredient_amounts = request.form.getlist("ingredient_amount")
+        ingredients = [
+            {"name": ing_name.strip(), "amount": ing_amount.strip()}
+            for ing_name, ing_amount in zip(ingredient_names, ingredient_amounts)
+            if ing_name.strip() and ing_amount.strip()
+        ]
+
+        if not name or not instructions or not ingredients:
+            flash("A cocktail needs a name, at least one ingredient with an amount, and instructions.")
+            return render_template("add_cocktail.html")
+
+        try:
+            cocktail_service.create_cocktail(name, instructions, ingredients)
+            flash(f"{name} added to the recipe book.")
+            return redirect(url_for("dashboard"))
+        except Exception as e:
+            flash(str(e))
+            return render_template("add_cocktail.html")
+
+    return render_template("add_cocktail.html")
 
 
 if __name__ == "__main__":

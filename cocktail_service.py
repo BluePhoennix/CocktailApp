@@ -7,27 +7,39 @@ def _fetch_all_cocktails():
     return result.data
 
 
-def show_cocktail(name):
-    name = name.lower()
-    for cocktail in _fetch_all_cocktails():
-        if cocktail["name"].lower() == name:
-            lines = [f"{i['name']}: {i['amount']}" for i in cocktail["cocktail_ingredients"]]
-            return {"name": cocktail["name"], "ingredients": lines, "instructions": cocktail["instructions"]}
-    return None
+def create_cocktail(name, instructions, ingredients):
+    client = get_client()
+    result = client.table("cocktails").insert({"name": name, "instructions": instructions}).execute()
+    cocktail_id = result.data[0]["id"]
+    rows = [{"cocktail_id": cocktail_id, "name": ing["name"], "amount": ing["amount"]} for ing in ingredients]
+    client.table("cocktail_ingredients").insert(rows).execute()
 
 
 def cocktail_statuses(inventory_names):
     statuses = []
     for cocktail in _fetch_all_cocktails():
-        needed = [i["name"].lower() for i in cocktail["cocktail_ingredients"]]
-        missing = [name for name in needed if name not in inventory_names]
+        ingredients = []
+        missing = []
+        for ing in cocktail["cocktail_ingredients"]:
+            have = ing["name"].lower() in inventory_names
+            if not have:
+                missing.append(ing["name"])
+            ingredients.append({"name": ing["name"], "amount": ing["amount"], "have": have})
+
         if not missing:
             state = "can_make"
         elif len(missing) == 1:
             state = "almost"
         else:
             state = "missing_many"
-        statuses.append({"name": cocktail["name"], "state": state, "missing": missing})
+
+        statuses.append({
+            "name": cocktail["name"],
+            "state": state,
+            "ingredients": ingredients,
+            "instructions": cocktail["instructions"],
+        })
+
     order = {"can_make": 0, "almost": 1, "missing_many": 2}
     statuses.sort(key=lambda s: (order[s["state"]], s["name"]))
     return statuses

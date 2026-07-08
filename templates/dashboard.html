@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-  <input type="text" id="cocktail-search" placeholder="Search cocktails..." autocomplete="off">
+  <div class="inline-row">
+    <input type="text" id="cocktail-search" placeholder="Search cocktails..." autocomplete="off">
+    <a class="btn" href="{{ url_for('add_cocktail_page') }}" style="text-decoration: none; white-space: nowrap;">+ Add cocktail</a>
+  </div>
 
   <div class="dashboard-layout">
     <div class="main-col">
@@ -11,15 +14,21 @@
 
       <div class="card">
         {% for s in statuses %}
-          <div class="cocktail-row {{ 'can-make' if s.state == 'can_make' else 'almost' if s.state == 'almost' else '' }}"
+          <div class="cocktail-item {{ 'can-make' if s.state == 'can_make' else 'almost' if s.state == 'almost' else '' }}"
                data-name="{{ s.name|lower }}" data-can-make="{{ '1' if s.state == 'can_make' else '0' }}">
-            <div class="box">{{ '✓' if s.state == 'can_make' else '!' if s.state == 'almost' else '' }}</div>
-            <div>
-              <a class="name" href="{{ url_for('cocktail_detail', name=s.name) }}">{{ s.name }}</a>
-              {% if s.missing %}
-                <div class="detail">Missing: {{ s.missing | join(", ") }}</div>
-              {% endif %}
+            <div class="cocktail-header">
+              <div class="box">{{ '✓' if s.state == 'can_make' else '!' if s.state == 'almost' else '' }}</div>
+              <span class="name">{{ s.name }}</span>
             </div>
+            <ul class="ingredient-list">
+              {% for ing in s.ingredients %}
+                <li>
+                  <input type="checkbox" disabled {{ 'checked' if ing.have }}>
+                  <span>{{ ing.name }}: {{ ing.amount }}</span>
+                </li>
+              {% endfor %}
+            </ul>
+            <p class="instructions">{{ s.instructions }}</p>
           </div>
         {% endfor %}
         <p id="no-results" class="empty-state" style="display: none;">No cocktails match.</p>
@@ -39,7 +48,7 @@
         <ul class="item-list">
           {% for item in inventory_items %}
             <li>
-              <span>{{ item }}</span>
+              <span>{{ item|capitalize }}</span>
               <form class="inline" method="post">
                 <input type="hidden" name="name" value="{{ item }}">
                 <button class="remove-btn" type="submit" name="action" value="remove">Remove</button>
@@ -56,7 +65,7 @@
   <script>
     const searchBox = document.getElementById("cocktail-search");
     const onlyMakeable = document.getElementById("only-makeable");
-    const rows = document.querySelectorAll(".cocktail-row");
+    const rows = document.querySelectorAll(".cocktail-item");
     const noResults = document.getElementById("no-results");
 
     function applyFilters() {
