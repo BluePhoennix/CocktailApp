@@ -1,7 +1,0 @@
-Figure out how to save inventory
-
-Add a function to add more drinks into recipes
-Needs:
-    ask for cocktail name
-    ask for an ingredient and then an amount to add these
-    write instructions
