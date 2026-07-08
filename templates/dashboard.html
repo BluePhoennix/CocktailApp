@@ -31,7 +31,7 @@
             <ul class="ingredient-list">
               {% for ing in s.ingredients %}
                 <li>
-                  <input type="checkbox" disabled {{ 'checked' if ing.have }}>
+                  <input type="checkbox" class="ingredient-check" tabindex="-1" {{ 'checked' if ing.have }}>
                   <span>{{ ing.name }}: {{ ing.amount }}</span>
                 </li>
               {% endfor %}
@@ -53,7 +53,7 @@
           <input type="text" id="share-url" value="{{ share_url }}" readonly>
           <button type="button" class="secondary" onclick="copyShareUrl()">Copy</button>
         </div>
-        <p class="empty-state">Anyone with this link can see what you can currently make. No login needed, and they can't view or edit your inventory or recipes.</p>
+        <p class="empty-state">Anyone with this link can see your recipe book and inventory, and what you can currently make. No login needed, but they can't edit anything.</p>
       </div>
 
       <div class="card">

@@ -341,6 +341,13 @@ form.inline { display: inline; }
 
 .ingredient-list input[type="checkbox"] {
   accent-color: var(--good);
+  width: 1rem;
+  height: 1rem;
+}
+
+.ingredient-check {
+  pointer-events: none;
+  cursor: default;
 }
 
 .cocktail-item .instructions {

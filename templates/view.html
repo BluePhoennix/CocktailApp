@@ -13,33 +13,65 @@
     <div class="inline-row">
       <input type="text" id="cocktail-search" placeholder="Search by name or ingredient..." autocomplete="off">
     </div>
-    <label class="filter-bar">
-      <input type="checkbox" id="only-makeable">
-      Only show cocktails that can actually be made
-    </label>
 
-    <div class="card">
-      {% for s in statuses %}
-        <div class="cocktail-item {{ 'can-make' if s.state == 'can_make' else 'almost' if s.state == 'almost' else '' }}"
-             data-name="{{ s.name|lower }}"
-             data-ingredients="{{ s.ingredients|map(attribute='name')|join(' ')|lower }}"
-             data-can-make="{{ '1' if s.state == 'can_make' else '0' }}">
-          <div class="cocktail-header">
-            <div class="box">{{ '✓' if s.state == 'can_make' else '!' if s.state == 'almost' else '' }}</div>
-            <span class="name">{{ s.name }}</span>
-          </div>
-          <ul class="ingredient-list">
-            {% for ing in s.ingredients %}
-              <li>
-                <input type="checkbox" disabled {{ 'checked' if ing.have }}>
-                <span>{{ ing.name }}: {{ ing.amount }}</span>
-              </li>
-            {% endfor %}
-          </ul>
-          <p class="instructions">{{ s.instructions }}</p>
+    <div class="dashboard-layout">
+      <div class="main-col">
+        <label class="filter-bar">
+          <input type="checkbox" id="only-makeable">
+          Only show cocktails that can actually be made
+        </label>
+
+        <div class="card">
+          {% for s in statuses %}
+            <div class="cocktail-item {{ 'can-make' if s.state == 'can_make' else 'almost' if s.state == 'almost' else '' }}"
+                 data-name="{{ s.name|lower }}"
+                 data-ingredients="{{ s.ingredients|map(attribute='name')|join(' ')|lower }}"
+                 data-can-make="{{ '1' if s.state == 'can_make' else '0' }}">
+              <div class="cocktail-header">
+                <div class="box">{{ '✓' if s.state == 'can_make' else '!' if s.state == 'almost' else '' }}</div>
+                <span class="name">{{ s.name }}</span>
+              </div>
+              <ul class="ingredient-list">
+                {% for ing in s.ingredients %}
+                  <li>
+                    <input type="checkbox" class="ingredient-check" tabindex="-1" {{ 'checked' if ing.have }}>
+                    <span>{{ ing.name }}: {{ ing.amount }}</span>
+                  </li>
+                {% endfor %}
+              </ul>
+              <p class="instructions">{{ s.instructions }}</p>
+            </div>
+          {% endfor %}
+          <p id="no-results" class="empty-state" style="display: none;">No cocktails match.</p>
         </div>
-      {% endfor %}
-      <p id="no-results" class="empty-state" style="display: none;">No cocktails match.</p>
+      </div>
+
+      <aside class="sidebar">
+        <div class="card">
+          <h2>Inventory</h2>
+          <p class="section-label">Spirits</p>
+          {% if spirits %}
+            <ul class="item-list">
+              {% for item in spirits %}
+                <li><span>{{ item|capitalize }}</span></li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="empty-state">No spirits yet.</p>
+          {% endif %}
+
+          <p class="section-label">Mixers</p>
+          {% if mixers %}
+            <ul class="item-list">
+              {% for item in mixers %}
+                <li><span>{{ item|capitalize }}</span></li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="empty-state">No mixers yet.</p>
+          {% endif %}
+        </div>
+      </aside>
     </div>
 
     <script>

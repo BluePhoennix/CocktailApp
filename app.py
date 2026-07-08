@@ -167,9 +167,14 @@ def view_page(share_code):
     if owner_id is None:
         return render_template("view.html", found=False)
 
-    inventory_names = {item["name"] for item in inventory_service.list_items(owner_id)}
+    inventory = inventory_service.list_items(owner_id)
+    inventory_names = {item["name"] for item in inventory}
     statuses = cocktail_service.cocktail_statuses(owner_id, inventory_names)
-    return render_template("view.html", found=True, statuses=statuses)
+
+    spirits = sorted(item["name"] for item in inventory if item["category"] == "spirit")
+    mixers = sorted(item["name"] for item in inventory if item["category"] == "mixer")
+
+    return render_template("view.html", found=True, statuses=statuses, spirits=spirits, mixers=mixers)
 
 
 if __name__ == "__main__":

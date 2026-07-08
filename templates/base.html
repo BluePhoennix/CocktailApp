@@ -3,21 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cocktail App</title>
+  <title>Evanly Sips</title>
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='Negroni.png') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
   {% if session.get('user_id') %}
   <div class="topbar">
-    <a class="brand" href="{{ url_for('dashboard') }}">Cocktail App</a>
+    <a class="brand" href="{{ url_for('dashboard') }}">Evanly Sips</a>
     <nav class="links">
       <a href="{{ url_for('logout') }}">Log out ({{ session.get('email') }})</a>
     </nav>
   </div>
   {% elif request.endpoint == 'view_page' %}
   <div class="topbar">
-    <span class="brand">Cocktail App</span>
+    <span class="brand">Evanly Sips</span>
   </div>
   {% endif %}
 
