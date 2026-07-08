@@ -5,27 +5,35 @@
     <div class="card">
       <p class="empty-state">This share link isn't valid.</p>
     </div>
-  {% elif not makeable %}
+  {% elif not statuses %}
     <div class="card">
-      <p class="empty-state">Nothing can currently be made from this bar.</p>
+      <p class="empty-state">No cocktails in this recipe book yet.</p>
     </div>
   {% else %}
     <div class="inline-row">
       <input type="text" id="cocktail-search" placeholder="Search by name or ingredient..." autocomplete="off">
     </div>
+    <label class="filter-bar">
+      <input type="checkbox" id="only-makeable">
+      Only show cocktails that can actually be made
+    </label>
 
     <div class="card">
-      {% for s in makeable %}
-        <div class="cocktail-item can-make"
+      {% for s in statuses %}
+        <div class="cocktail-item {{ 'can-make' if s.state == 'can_make' else 'almost' if s.state == 'almost' else '' }}"
              data-name="{{ s.name|lower }}"
-             data-ingredients="{{ s.ingredients|map(attribute='name')|join(' ')|lower }}">
+             data-ingredients="{{ s.ingredients|map(attribute='name')|join(' ')|lower }}"
+             data-can-make="{{ '1' if s.state == 'can_make' else '0' }}">
           <div class="cocktail-header">
-            <div class="box">✓</div>
+            <div class="box">{{ '✓' if s.state == 'can_make' else '!' if s.state == 'almost' else '' }}</div>
             <span class="name">{{ s.name }}</span>
           </div>
           <ul class="ingredient-list">
             {% for ing in s.ingredients %}
-              <li><span>{{ ing.name }}: {{ ing.amount }}</span></li>
+              <li>
+                <input type="checkbox" disabled {{ 'checked' if ing.have }}>
+                <span>{{ ing.name }}: {{ ing.amount }}</span>
+              </li>
             {% endfor %}
           </ul>
           <p class="instructions">{{ s.instructions }}</p>
@@ -36,6 +44,7 @@
 
     <script>
       const searchBox = document.getElementById("cocktail-search");
+      const onlyMakeable = document.getElementById("only-makeable");
       const rows = document.querySelectorAll(".cocktail-item");
       const noResults = document.getElementById("no-results");
 
@@ -43,7 +52,9 @@
         const query = searchBox.value.trim().toLowerCase();
         let visibleCount = 0;
         rows.forEach((row) => {
-          const visible = row.dataset.name.includes(query) || row.dataset.ingredients.includes(query);
+          const matchesSearch = row.dataset.name.includes(query) || row.dataset.ingredients.includes(query);
+          const matchesFilter = !onlyMakeable.checked || row.dataset.canMake === "1";
+          const visible = matchesSearch && matchesFilter;
           row.style.display = visible ? "" : "none";
           if (visible) visibleCount += 1;
         });
@@ -51,6 +62,7 @@
       }
 
       searchBox.addEventListener("input", applyFilters);
+      onlyMakeable.addEventListener("change", applyFilters);
     </script>
   {% endif %}
 {% endblock %}

@@ -165,12 +165,11 @@ def delete_cocktail_page(cocktail_id):
 def view_page(share_code):
     owner_id = profile_service.get_user_id_by_share_code(share_code)
     if owner_id is None:
-        return render_template("view.html", found=False, makeable=[])
+        return render_template("view.html", found=False)
 
     inventory_names = {item["name"] for item in inventory_service.list_items(owner_id)}
     statuses = cocktail_service.cocktail_statuses(owner_id, inventory_names)
-    makeable = [s for s in statuses if s["state"] == "can_make"]
-    return render_template("view.html", found=True, makeable=makeable)
+    return render_template("view.html", found=True, statuses=statuses)
 
 
 if __name__ == "__main__":
