@@ -9,6 +9,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from auth import signup, login, login_required
 import cocktail_service
 import inventory_service
+import profile_service
 
 app = Flask(__name__)
 app.secret_key = os.environ["FLASK_SECRET_KEY"]
@@ -27,7 +28,8 @@ def signup_page():
         email = request.form["email"]
         password = request.form["password"]
         try:
-            signup(email, password)
+            result = signup(email, password)
+            profile_service.create_profile(result.user.id)
             flash("Account created. Check your email to confirm, then log in.")
             return redirect(url_for("login_page"))
         except Exception as e:
@@ -71,7 +73,15 @@ def dashboard():
 
     inventory_items = sorted(inventory_service.list_items(user_id))
     statuses = cocktail_service.cocktail_statuses(set(inventory_items))
-    return render_template("dashboard.html", inventory_items=inventory_items, statuses=statuses)
+
+    share_code = profile_service.get_share_code(user_id)
+    if share_code is None:
+        share_code = profile_service.create_profile(user_id)
+    share_url = url_for("view_page", share_code=share_code, _external=True)
+
+    return render_template(
+        "dashboard.html", inventory_items=inventory_items, statuses=statuses, share_url=share_url
+    )
 
 
 @app.route("/cocktails/new", methods=["GET", "POST"])
@@ -101,6 +111,18 @@ def add_cocktail_page():
             return render_template("add_cocktail.html")
 
     return render_template("add_cocktail.html")
+
+
+@app.route("/view/<share_code>")
+def view_page(share_code):
+    owner_id = profile_service.get_user_id_by_share_code(share_code)
+    if owner_id is None:
+        return render_template("view.html", found=False, makeable=[])
+
+    inventory_names = inventory_service.list_items(owner_id)
+    statuses = cocktail_service.cocktail_statuses(inventory_names)
+    makeable = [s for s in statuses if s["state"] == "can_make"]
+    return render_template("view.html", found=True, makeable=makeable)
 
 
 if __name__ == "__main__":

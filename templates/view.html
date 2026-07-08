@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>What can be made</h1>
+  {% if not found %}
+    <div class="card">
+      <p class="empty-state">This share link isn't valid.</p>
+    </div>
+  {% elif not makeable %}
+    <div class="card">
+      <p class="empty-state">Nothing can currently be made from this bar.</p>
+    </div>
+  {% else %}
+    <div class="card">
+      {% for s in makeable %}
+        <div class="cocktail-item can-make">
+          <div class="cocktail-header">
+            <div class="box">✓</div>
+            <span class="name">{{ s.name }}</span>
+          </div>
+          <ul class="ingredient-list">
+            {% for ing in s.ingredients %}
+              <li><span>{{ ing.name }}: {{ ing.amount }}</span></li>
+            {% endfor %}
+          </ul>
+          <p class="instructions">{{ s.instructions }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endblock %}

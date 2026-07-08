@@ -126,6 +126,10 @@ nav.links a.active {
   flex: none;
 }
 
+.sidebar .card:last-child {
+  margin-bottom: 0;
+}
+
 .sidebar h2 {
   font-size: 1rem;
   margin: 0 0 0.75rem;

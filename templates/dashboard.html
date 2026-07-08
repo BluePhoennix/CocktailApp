@@ -38,27 +38,38 @@
       </div>
     </div>
 
-    <aside class="sidebar card">
-      <h2>Inventory</h2>
-      <form method="post" class="inline-row">
-        <input type="text" name="name" placeholder="Ingredient" required>
-        <button type="submit" name="action" value="add">Add</button>
-      </form>
-      {% if inventory_items %}
-        <ul class="item-list">
-          {% for item in inventory_items %}
-            <li>
-              <span>{{ item|capitalize }}</span>
-              <form class="inline" method="post">
-                <input type="hidden" name="name" value="{{ item }}">
-                <button class="remove-btn" type="submit" name="action" value="remove">Remove</button>
-              </form>
-            </li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <p class="empty-state">Your inventory is empty.</p>
-      {% endif %}
+    <aside class="sidebar">
+      <div class="card">
+        <h2>Share your bar</h2>
+        <div class="inline-row" style="margin-bottom: 0.5rem;">
+          <input type="text" id="share-url" value="{{ share_url }}" readonly>
+          <button type="button" class="secondary" onclick="copyShareUrl()">Copy</button>
+        </div>
+        <p class="empty-state">Anyone with this link can see what you can currently make. No login needed, and they can't view or edit your inventory or recipes.</p>
+      </div>
+
+      <div class="card">
+        <h2>Inventory</h2>
+        <form method="post" class="inline-row">
+          <input type="text" name="name" placeholder="Ingredient" required>
+          <button type="submit" name="action" value="add">Add</button>
+        </form>
+        {% if inventory_items %}
+          <ul class="item-list">
+            {% for item in inventory_items %}
+              <li>
+                <span>{{ item|capitalize }}</span>
+                <form class="inline" method="post">
+                  <input type="hidden" name="name" value="{{ item }}">
+                  <button class="remove-btn" type="submit" name="action" value="remove">Remove</button>
+                </form>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="empty-state">Your inventory is empty.</p>
+        {% endif %}
+      </div>
     </aside>
   </div>
 
@@ -83,5 +94,11 @@
 
     searchBox.addEventListener("input", applyFilters);
     onlyMakeable.addEventListener("change", applyFilters);
+
+    function copyShareUrl() {
+      const input = document.getElementById("share-url");
+      input.select();
+      navigator.clipboard.writeText(input.value);
+    }
   </script>
 {% endblock %}

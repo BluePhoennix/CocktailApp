@@ -14,9 +14,13 @@
       <a href="{{ url_for('logout') }}">Log out ({{ session.get('email') }})</a>
     </nav>
   </div>
+  {% elif request.endpoint == 'view_page' %}
+  <div class="topbar">
+    <span class="brand">Cocktail App</span>
+  </div>
   {% endif %}
 
-  <div class="container {{ 'narrow' if request.endpoint in ('login_page', 'signup_page') else 'wide' if request.endpoint == 'dashboard' }}">
+  <div class="container {{ 'narrow' if request.endpoint in ('login_page', 'signup_page') else 'wide' if request.endpoint in ('dashboard', 'view_page') }}">
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         {% for message in messages %}

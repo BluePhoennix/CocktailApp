@@ -46,3 +46,19 @@ union all
 select id, 'Lime', '1oz' from cocktails where name = 'Margarita'
 union all
 select id, 'Triple sec', '1oz' from cocktails where name = 'Margarita';
+
+-- Migration: run this next, in the SQL editor, to add shareable read-only links.
+-- Lets each account holder share a code/link that shows "what can be made"
+-- to anyone who has it, without a login and without exposing inventory or edit access.
+create table profiles (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  share_code text unique not null
+);
+
+alter table profiles enable row level security;
+
+create policy "Users manage their own profile"
+  on profiles
+  for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
