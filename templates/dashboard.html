@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
+  <form method="post" class="bar-name-row">
+    <input type="hidden" name="action" value="update_bar_name">
+    <input type="text" name="bar_name" class="bar-name-input" value="{{ bar_name }}" maxlength="60" aria-label="Bar name">
+    <button type="submit" class="secondary">Save</button>
+  </form>
+
   <div class="inline-row">
     <input type="text" id="cocktail-search" placeholder="Search by name or ingredient..." autocomplete="off">
     <a class="btn" href="{{ url_for('add_cocktail_page') }}" style="text-decoration: none; white-space: nowrap;">+ Add cocktail</a>

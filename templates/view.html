@@ -1,15 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
-  <h1>What can be made</h1>
   {% if not found %}
+    <h1>What can be made</h1>
     <div class="card">
       <p class="empty-state">This share link isn't valid.</p>
     </div>
   {% elif not statuses %}
+    <h1>{{ bar_name }}</h1>
     <div class="card">
       <p class="empty-state">No cocktails in this recipe book yet.</p>
     </div>
   {% else %}
+    <h1>{{ bar_name }}</h1>
+    <p class="section-label" style="margin: -0.75rem 0 1.25rem;">What can be made</p>
+
     <div class="inline-row">
       <input type="text" id="cocktail-search" placeholder="Search by name or ingredient..." autocomplete="off">
     </div>

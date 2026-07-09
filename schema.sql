@@ -105,3 +105,7 @@ create policy "Users manage their own cocktail ingredients"
 -- infer which category they were before.
 alter table inventory_items add column category text not null default 'mixer'
   check (category in ('spirit', 'mixer'));
+
+-- Migration: run this next, in the SQL editor, to let each account holder
+-- name their bar. Defaults to "Anonymous' Bar" for existing profiles.
+alter table profiles add column bar_name text not null default 'Anonymous'' Bar';

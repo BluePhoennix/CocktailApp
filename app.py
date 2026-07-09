@@ -70,6 +70,9 @@ def dashboard():
             inventory_service.add_item(user_id, name, category)
         elif name and action == "remove":
             inventory_service.remove_item(user_id, name)
+        elif action == "update_bar_name":
+            bar_name = request.form.get("bar_name", "").strip() or "Anonymous' Bar"
+            profile_service.update_bar_name(user_id, bar_name)
         return redirect(url_for("dashboard"))
 
     inventory = inventory_service.list_items(user_id)
@@ -79,13 +82,22 @@ def dashboard():
     spirits = sorted(item["name"] for item in inventory if item["category"] == "spirit")
     mixers = sorted(item["name"] for item in inventory if item["category"] == "mixer")
 
-    share_code = profile_service.get_share_code(user_id)
-    if share_code is None:
+    profile = profile_service.get_profile(user_id)
+    if profile is None:
         share_code = profile_service.create_profile(user_id)
+        bar_name = "Anonymous' Bar"
+    else:
+        share_code = profile["share_code"]
+        bar_name = profile["bar_name"]
     share_url = url_for("view_page", share_code=share_code, _external=True)
 
     return render_template(
-        "dashboard.html", spirits=spirits, mixers=mixers, statuses=statuses, share_url=share_url
+        "dashboard.html",
+        spirits=spirits,
+        mixers=mixers,
+        statuses=statuses,
+        share_url=share_url,
+        bar_name=bar_name,
     )
 
 
@@ -174,7 +186,12 @@ def view_page(share_code):
     spirits = sorted(item["name"] for item in inventory if item["category"] == "spirit")
     mixers = sorted(item["name"] for item in inventory if item["category"] == "mixer")
 
-    return render_template("view.html", found=True, statuses=statuses, spirits=spirits, mixers=mixers)
+    profile = profile_service.get_profile(owner_id)
+    bar_name = profile["bar_name"] if profile else "Anonymous' Bar"
+
+    return render_template(
+        "view.html", found=True, statuses=statuses, spirits=spirits, mixers=mixers, bar_name=bar_name
+    )
 
 
 if __name__ == "__main__":
